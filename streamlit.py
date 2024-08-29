@@ -20,7 +20,7 @@ if st.button("Predict"):
 
     try:
         # Send data to FastAPI
-        response = requests.post("https://api-u65r.onrender.com/predict", json=player_data)
+        response = requests.post("https://api-u65r.onrender.com", json=player_data)
         response.raise_for_status()  # Will raise an HTTPError for bad responses
 
         # Extract and display prediction
