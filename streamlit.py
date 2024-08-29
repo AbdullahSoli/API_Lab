@@ -22,5 +22,11 @@ if st.button("Predict"):
     # Send data to FastAPI
     response = requests.post("https://api-u65r.onrender.com/predict", json=player_data)
     prediction = response.json()["prediction"]
-    
+    try:
+        response = requests.post("https://api-u65r.onrender.com/predict", json=player_data)
+        response.raise_for_status()  # Will raise an HTTPError for bad responses
+        prediction = response.json().get("prediction", "No prediction found")
+        st.write(f"Prediction: {prediction}")
+    except requests.exceptions.RequestException as e:
+        st.error(f"An error occurred: {e}")
     st.write(f"Prediction: {prediction}")
