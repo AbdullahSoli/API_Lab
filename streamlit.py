@@ -1,31 +1,42 @@
 import streamlit as st
 import requests
 
-# Define the FastAPI endpoint
-API_URL = "https://api-u65r.onrender.com/predict/"
-
 st.title("Football Player Prediction")
 
-# Input fields for the prediction
-#position = st.number_input("Position", min_value=0, step=1)
-age = st.number_input("Age", min_value=0, step=1)
-appearances = st.number_input("Appearances", min_value=0, step=1)
-goals = st.number_input("Goals", min_value=0, step=1)
-# Add more input fields as needed
+# Collect user input
+age = st.number_input("Age", min_value=0)
+appearances = st.number_input("Appearances", min_value=0)
+goals = st.number_input("Goals", min_value=0)
 
+# Add input fields for other features...
+# Example: position_attack_centre_forward
+positions = [
+    "Attack Centre-Forward",
+    "Attack LeftWinger",
+    "Attack RightWinger",
+    "Attack Second Striker",
+    "Defender Centre-Back",
+    "Defender Left-Back",
+    "Defender Right-Back",
+    "Goalkeeper",
+    "Midfield Attacking Midfield",
+    "Midfield Central Midfield",
+    "Midfield Defensive Midfield",
+    "Midfield Left Midfield",
+    "Midfield Right Midfield"
+]
+position = st.selectbox("Position", positions)
+
+# Button to submit data
 if st.button("Predict"):
-    # Create the request payload
-    payload = {
-        #'Position': position,
+    player_data = {
         "age": age,
         "appearances": appearances,
         "goals": goals,
-        # Add more fields as needed
+        "position": position
     }
+    # Send data to FastAPI
+    response = requests.post("https://your-render-url.com/predict/", json=player_data)
+    prediction = response.json()["prediction"]
     
-    # Make a POST request to the FastAPI service
-    response = requests.post(API_URL, json=payload)
-    prediction = response.json()
-    
-    # Display the prediction
-    st.write(f"Predicted Category: {prediction['prediction']}")
+    st.write(f"Prediction: {prediction}")
