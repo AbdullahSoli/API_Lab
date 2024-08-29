@@ -36,7 +36,7 @@ if st.button("Predict"):
         "position": position
     }
     # Send data to FastAPI
-    response = requests.post("https://your-render-url.com/predict/", json=player_data)
+    response = requests.post(""https://api-u65r.onrender.com/predict", json=player_data)
     prediction = response.json()["prediction"]
     
     st.write(f"Prediction: {prediction}")
