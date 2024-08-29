@@ -1,31 +1,47 @@
-import streamlit as st
-import requests
+from fastapi import FastAPI
+app = FastAPI()
+@app.get("/")
+def root():
+ return "Welcome To Tuwaiq Academy"
 
-st.title("Football Player Prediction")
+@app.get("/items/{item_id}")
+async def read_item(item_id):
+ return {"item_id": item_id}
 
-# Collect user input
-age = st.number_input("Age", min_value=0)
-appearances = st.number_input("Appearances", min_value=0)
-goals = st.number_input("Goals", min_value=0)
-position = st.text_input("Enter Position", "")
+import joblib
+model = joblib.load('knn_model5.joblib')
+scaler = joblib.load('scaler5.joblib')
 
-# Button to submit data
-if st.button("Predict"):
-    player_data = {
-        "age": age,
-        "appearances": appearances,
-        "goals": goals,
-        "position": position
-    }
+from pydantic import BaseModel
+ # Define a Pydantic model for input data validation
+class InputFeatures(BaseModel):
+    Year: int
+    Engine_Size: float
+    Mileage: float
+    Type: str
+    Make: str
+    Options: str
 
-    try:
-        # Send data to FastAPI
-        response = requests.post("https://api-u65r.onrender.com", json=player_data)
-        response.raise_for_status()  # Will raise an HTTPError for bad responses
+def preprocessing(input_features: InputFeatures):
+    dict_f = {
+            'Year': input_features.Year,
+            'Engine_Size': input_features.Engine_Size, 
+            'Mileage': input_features.Mileage, 
+            'Type_Accent': input_features.Type == 'Accent',
+            'Type_Land Cruiser': input_features.Type == 'LandCruiser',
+            'Make_Hyundai': input_features.Make == 'Hyundai',
+            'Make_Mercedes': input_features.Make == 'Mercedes',
+            'Options_Full': input_features.Options == 'Full',
+            'Options_Standard': input_features.Options == 'Standard'
+        }
+    return dict_f
 
-        # Extract and display prediction
-        prediction = response.json().get("prediction", "No prediction found")
-        st.write(f"Prediction: {prediction}")
-        
-    except requests.exceptions.RequestException as e:
-        st.error(f"An error occurred: {e}")
+@app.get("/predict")
+def predict(input_features: InputFeatures):
+    return preprocessing(input_features)
+
+@app.post("/predict")
+async def predict(input_features: InputFeatures):
+    data = preprocessing(input_features)
+    y_pred = model.predict(data)
+    return {"pred": y_pred.tolist()[0]}
