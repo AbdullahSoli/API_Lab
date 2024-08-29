@@ -8,24 +8,8 @@ age = st.number_input("Age", min_value=0)
 appearances = st.number_input("Appearances", min_value=0)
 goals = st.number_input("Goals", min_value=0)
 
-# Add input fields for other features...
-# Example: position_attack_centre_forward
-positions = [
-    "Attack Centre-Forward",
-    "Attack LeftWinger",
-    "Attack RightWinger",
-    "Attack Second Striker",
-    "Defender Centre-Back",
-    "Defender Left-Back",
-    "Defender Right-Back",
-    "Goalkeeper",
-    "Midfield Attacking Midfield",
-    "Midfield Central Midfield",
-    "Midfield Defensive Midfield",
-    "Midfield Left Midfield",
-    "Midfield Right Midfield"
-]
-position = st.selectbox("Position", positions)
+position = st.text_input("Enter Position", "")
+
 
 # Button to submit data
 if st.button("Predict"):
